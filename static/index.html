@@ -47,11 +47,37 @@
                 }
             };
             //POST to a URL
-            xhr.open("POST", url, true);
+            xhr.open("POST", "http://" + url, true);
             // set the mimetype and the accept headers!
             xhr.setRequestHeader("Content-Type", "application/json",
                 "Accept", "application/json");
             // Remember to use application/json !
+            xhr.send(JSON.stringify(objects));
+        }
+        function sendJSONXMLHTTPRequestGET(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    try {
+                        if (xhr.status == 200) {
+                            //parse some JSON from the request!
+                            const data = JSON.parse(xhr.responseText);
+                            //Pass the data to the callback!
+                            callback(data);
+                        }
+                    }
+                    catch (e) {
+                        alert('Error: ' + e.name);
+                    }
+                }
+            };
+            //GET a URL
+            xhr.open("GET", "http://" + url, true);
+            // set the accept headers
+            xhr.setRequestHeader(
+                "Accept", "application/json");
+            xhr.send();
+
         }
 
 
@@ -61,7 +87,7 @@
         function drawCircle(context, entity) {
             with (context) {
                 beginPath();
-                lineWidth = 3;
+                lineWidth = 1;
                 var x = entity["x"];
                 var y = entity["y"];
                 //moveTo(x,y);
@@ -139,9 +165,11 @@
         function addEntity(entity, data) {
             world[entity] = data;
             drawNextFrame(); // (but should we?)
-            //XXX: Send a XHTML Request that updates the entity you just  modified!
-            const url = host + "/entity/" + entity + "/"
-            sendJSONXMLHTTPRequest(host, data)
+            //XXX DONE: Send a XHTML Request that updates the entity you just  modified!
+            const url = host + "/entity/" + entity
+            sendJSONXMLHTTPRequest(url, data, function (data) {
+
+            });
         }
 
         var counter = 0;
@@ -267,6 +295,10 @@
 
         function update() {
             //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
+            const url = host + "/world"
+            sendJSONXMLHTTPRequestGET(url, function (data) {
+                world = data;
+            });
             drawFrame();
         }
 

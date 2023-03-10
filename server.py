@@ -86,15 +86,18 @@ def hello():
 def update(entity):
     '''update the entities via this interface'''
     if request.method == 'POST':
+        if myWorld.get(entity) == {}:  # if entity doesn't exist
+            myWorld.set(entity, flask_post_json())
         # update entity
         data = flask_post_json()
         for key in data:
             myWorld.update(entity, key, data[key])
+        # return the entity that was updated
+        return json.dumps(myWorld.get(entity))
     elif request.method == 'PUT':
-        # create new entity
-        data = flask_post_json()
-        myWorld.set(entity, data)
-    return None
+        myWorld.set(entity, flask_post_json())
+        # return the entity that was PUT
+        return json.dumps(myWorld.get(entity))
 
 
 @app.route("/world", methods=['POST', 'GET'])
@@ -113,7 +116,7 @@ def get_entity(entity):
 def clear():
     '''Clear the world out!'''
     myWorld.clear()
-    return None
+    return json.dumps({})
 
 
 if __name__ == "__main__":
