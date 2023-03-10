@@ -94,6 +94,9 @@
                 fillStyle = entity["colour"];
                 strokeStyle = fillStyle;
                 arc(x, y, (entity["radius"]) ? entity["radius"] : 50, 0, 2.0 * Math.PI, false);
+                if (entity["radius"] <= 10) {
+                    fill()
+                }
                 stroke();
             }
         }
@@ -164,11 +167,10 @@
 
         function addEntity(entity, data) {
             world[entity] = data;
-            drawNextFrame(); // (but should we?)
             //XXX DONE: Send a XHTML Request that updates the entity you just  modified!
             const url = host + "/entity/" + entity
             sendJSONXMLHTTPRequest(url, data, function (data) {
-
+                drawNextFrame(); // (but should we?)
             });
         }
 
@@ -278,11 +280,11 @@
         // Add the application specific mouse listeners!
         //XXX: TODO Make these prettier!
         mouse.mousedowners.push(function (x, y, clicked, e) {
-            addEntityWithoutName({ 'x': x, 'y': y, 'colour': 'blue' });
+            addEntityWithoutName({ 'x': x, 'y': y, 'colour': 'blue', 'radius': 15 });
         });
 
         mouse.mouseuppers.push(function (x, y, clicked, e) {
-            addEntityWithoutName({ 'x': x, 'y': y, 'colour': 'red' });
+            addEntityWithoutName({ 'x': x, 'y': y, 'colour': 'red', 'radius': 15 });
         });
 
         mouse.mousedraggers.push(function (x, y, clicked, e) {
@@ -297,7 +299,11 @@
             //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
             const url = host + "/world"
             sendJSONXMLHTTPRequestGET(url, function (data) {
-                world = data;
+                if (data != world) { // only update if the world has changed
+                    world = data;
+                    drawNextFrame();
+                }
+
             });
             drawFrame();
         }
