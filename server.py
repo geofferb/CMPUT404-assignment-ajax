@@ -100,13 +100,13 @@ def update(entity):
 @app.route("/world", methods=['POST', 'GET'])
 def world():
     '''you should probably return the world here'''
-    return myWorld.world()
+    return json.dumps(myWorld.world())
 
 
 @app.route("/entity/<entity>")
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return myWorld.get(entity)
+    return json.dumps(myWorld.get(entity))
 
 
 @app.route("/clear", methods=['POST', 'GET'])
