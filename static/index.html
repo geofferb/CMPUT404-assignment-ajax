@@ -140,7 +140,8 @@
             world[entity] = data;
             drawNextFrame(); // (but should we?)
             //XXX: Send a XHTML Request that updates the entity you just  modified!
-
+            const url = host + "/entity/" + entity + "/"
+            sendJSONXMLHTTPRequest(host, data)
         }
 
         var counter = 0;
